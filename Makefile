@@ -26,12 +26,30 @@ ifeq ($(OS),Windows_NT)
 	SDL_IMAGE=SDL/SDL2_image-2.8.8/$(SDL_ARCH)
 	SDL_TTF=SDL/SDL2_ttf-2.24.0/$(SDL_ARCH)
 	SDL_MIXER=SDL/SDL2_mixer-2.8.1/$(SDL_ARCH)
+	SDL_NET=SDL/SDL2_net-2.2.0/$(SDL_ARCH)
 
-	INCLUDEPATH = -I$(RESOURCES_DIR)/$(SDL_MAIN)/include -I$(RESOURCES_DIR)/$(SDL_IMAGE)/include -I$(RESOURCES_DIR)/$(SDL_TTF)/include -I$(RESOURCES_DIR)/$(SDL_MIXER)/include
+	INCLUDEPATH = -I$(RESOURCES_DIR)/$(SDL_MAIN)/include \
+		-I$(RESOURCES_DIR)/$(SDL_MAIN)/include/SDL2 \
+		-I$(RESOURCES_DIR)/$(SDL_IMAGE)/include \
+		-I$(RESOURCES_DIR)/$(SDL_TTF)/include \
+		-I$(RESOURCES_DIR)/$(SDL_MIXER)/include \
+		-I$(RESOURCES_DIR)/$(SDL_NET)/include
 	LFLAGS = -mwindows -O
-	CFLAGS = -c -Wall
-	LIBS = -L$(RESOURCES_DIR)/$(SDL_MAIN)/lib -L$(RESOURCES_DIR)/$(SDL_IMAGE)/lib -L$(RESOURCES_DIR)/$(SDL_TTF)/lib -L$(RESOURCES_DIR)/$(SDL_MIXER)/lib -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer
-	APP_RESOURCES = $(SDL_MAIN)/bin/*.dll $(SDL_IMAGE)/bin/*.dll $(SDL_TTF)/bin/*.dll $(SDL_MIXER)/bin/*.dll font/kongtext.ttf textures/texture.png levels sounds
+	CFLAGS = -c -Wall -std=c++17
+	LIBS = -L$(RESOURCES_DIR)/$(SDL_MAIN)/lib \
+		-L$(RESOURCES_DIR)/$(SDL_IMAGE)/lib \
+		-L$(RESOURCES_DIR)/$(SDL_TTF)/lib \
+		-L$(RESOURCES_DIR)/$(SDL_MIXER)/lib \
+		-L$(RESOURCES_DIR)/$(SDL_NET)/lib \
+		-lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer -lSDL2_net
+
+	APP_RESOURCES = $(SDL_MAIN)/bin/*.dll \
+		$(SDL_IMAGE)/bin/*.dll \
+		$(SDL_TTF)/bin/*.dll \
+		$(SDL_MIXER)/bin/*.dll \
+		$(SDL_NET)/bin/*.dll \
+		font/kongtext.ttf textures/texture.png levels sounds
+
 	RESOURCES = $(APP_RESOURCES)
 else
 	UNAME_S := $(shell uname -s)
@@ -51,7 +69,7 @@ else
 		endif
 		LFLAGS = -O
 		CFLAGS = -c -Wall -Wno-narrowing -std=c++17
-		LIBS = -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer
+		LIBS = -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer -lSDL2_net
 		APP_RESOURCES = font/kongtext.ttf textures/texture.png levels sounds
 		RESOURCES = $(APP_RESOURCES)
 	else
@@ -59,7 +77,7 @@ else
 		INCLUDEPATH =
 		LFLAGS = -O
 		CFLAGS = -c -Wall -Wno-narrowing -std=c++17
-		LIBS = -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer
+		LIBS = -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer -lSDL2_net
 		APP_RESOURCES = font/kongtext.ttf textures/texture.png levels sounds
 		RESOURCES = $(APP_RESOURCES)
 	endif
@@ -105,6 +123,12 @@ $(BUILD_DIRS):
 
 compile: $(OBJS)
 	$(CC) $(OBJS) $(INCLUDEPATH) $(LIBSPATH) $(LIBS) $(l) -o $(BIN)/$(PROJECT_NAME)
+ifeq ($(OS),Windows_NT)
+	cp $(MSYSTEM_PREFIX)/bin/libgcc_s_seh-1.dll $(BIN)/
+	cp $(MSYSTEM_PREFIX)/bin/libstdc++-6.dll $(BIN)/
+	cp $(MSYSTEM_PREFIX)/bin/libwinpthread-1.dll $(BIN)/
+	cp $(MSYSTEM_PREFIX)/bin/SDL2_net.dll $(BIN)/
+endif
 
 build/%.o: $(SRC)/%.cpp
 	$(CC) $(CFLAGS) $(INCLUDEPATH) $< -o $@

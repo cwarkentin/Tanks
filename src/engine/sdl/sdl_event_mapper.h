@@ -202,6 +202,9 @@ KeyboardEvent *mapSDLEventToKeyboardEvent(const SDL_Event &sdl_event, KeyboardEv
     case SDLK_F12:
         keycode = KeyCode::KEY_F12;
         break;
+    case SDLK_PERIOD:
+        keycode = KeyCode::KEY_DOT;
+        break;
     default:
         keycode = KeyCode::KEY_UNKNOWN;
         break;

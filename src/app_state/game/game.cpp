@@ -8,6 +8,7 @@
 #include "../../soundconfig.h"
 
 #include <stdlib.h>
+#include <cstdlib>
 #include <ctime>
 #include <fstream>
 #include <algorithm>
@@ -52,6 +53,10 @@ Game::~Game()
 
 void Game::onInitialize()
 {
+        // Re-seed RNG with shared network seed if playing online
+    if (m_network_manager != nullptr)
+        srand(m_network_manager->syncSeed());
+
     createPlayersIfNeeded();
     playSound(SoundConfig::STAGE_START_UP);
 
@@ -100,6 +105,10 @@ void Game::clearAll()
 
     delete m_level_environment;
     m_level_environment = nullptr;
+    if (m_network_manager != nullptr){
+        delete m_network_manager;
+        m_network_manager = nullptr;
+    }
 }
 
 void Game::createPlayersIfNeeded()

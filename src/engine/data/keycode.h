@@ -9,6 +9,7 @@ enum KeyCode {
     KEY_BACKSPACE = 8,
     KEY_TAB = 9,
     KEY_SPACE = 32,
+    KEY_DOT = 46,
         
     // Number keys
     KEY_0 = 48,

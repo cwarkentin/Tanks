@@ -176,6 +176,15 @@ void Player::resetKeyStates()
     m_key_state_fire.pressed = false;
 }
 
+void Player::applyNetworkInput(const InputPacket &input)
+{
+    m_key_state_up.pressed    = input.up;
+    m_key_state_down.pressed  = input.down;
+    m_key_state_left.pressed  = input.left;
+    m_key_state_right.pressed = input.right;
+    m_key_state_fire.pressed  = input.fire;
+}
+
 void Player::addScore(unsigned points)
 {
     m_score += points;

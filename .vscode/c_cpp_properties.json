@@ -1,0 +1,17 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "compilerPath": "C:/msys64/mingw64/bin/g++.exe",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "windows-gcc-x64",
+            "includePath": [
+                "${workspaceFolder}/src/**",
+                "${workspaceFolder}/resources/SDL/SDL2-2.32.4/x86_64-w64-mingw32/include",
+                "${workspaceFolder}/resources/SDL/SDL2_net-2.2.0/x86_64-w64-mingw32/include",
+                "C:/msys64/mingw64/include/**"
+            ]
+        }
+    ],
+    "version": 4
+}

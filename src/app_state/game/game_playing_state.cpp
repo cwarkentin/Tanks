@@ -11,13 +11,41 @@ void Game::PlayingState::draw(Renderer &renderer)
 
 void Game::PlayingState::update(const UpdateState &updateState)
 {
-    m_context->updateScene(updateState.delta_time);
+    if (m_context->m_network_manager && m_context->m_network_manager->isConnected())
+    {
+        m_context->m_local_input.frame = m_context->m_frame;
+        m_context->m_network_manager->sendInput(m_context->m_local_input);
+        m_context->m_network_manager->receiveInput(m_context->m_remote_input);
+
+        if (m_context->m_network_manager->isHost())
+        {
+            if (m_context->m_players.size() > 0)
+                m_context->m_players[0]->applyNetworkInput(m_context->m_local_input);
+            if (m_context->m_players.size() > 1)
+                m_context->m_players[1]->applyNetworkInput(m_context->m_remote_input);
+        }
+        else
+        {
+            if (m_context->m_players.size() > 0)
+                m_context->m_players[0]->applyNetworkInput(m_context->m_remote_input);
+            if (m_context->m_players.size() > 1)
+                m_context->m_players[1]->applyNetworkInput(m_context->m_local_input);
+        }
+
+        // Use fixed timestep when playing online so both machines step identically
+        m_context->updateScene(16); // fixed 16ms (~60fps) instead of variable delta_time
+    }
+    else
+    {
+        m_context->updateScene(updateState.delta_time);
+    }
+
+    m_context->m_frame++;
 
     if (m_context->m_enemies.empty() && m_context->m_enemies_to_kill_count <= 0)
     {
         transiteTo(new Game::LevelEndingState(m_context, false, false));
     }
-
     if (m_context->m_players.empty())
     {
         transiteTo(new Game::GameOverState(m_context));
@@ -52,6 +80,18 @@ void Game::PlayingState::eventProcess(const Event &event)
         }
 
         for (auto player : m_context->m_players)
-            player->handleKeyboardEvent(event_key);
+        {
+            if (event_key.isPressed(KEY_UP))         m_context->m_local_input.up    = true;
+            if (event_key.isPressed(KEY_DOWN))       m_context->m_local_input.down  = true;
+            if (event_key.isPressed(KEY_LEFT))       m_context->m_local_input.left  = true;
+            if (event_key.isPressed(KEY_RIGHT))      m_context->m_local_input.right = true;
+            if (event_key.isPressed(KEY_RCTRL))      m_context->m_local_input.fire  = true;
+
+            if (event_key.isReleased(KEY_UP))        m_context->m_local_input.up    = false;
+            if (event_key.isReleased(KEY_DOWN))      m_context->m_local_input.down  = false;
+            if (event_key.isReleased(KEY_LEFT))      m_context->m_local_input.left  = false;
+            if (event_key.isReleased(KEY_RIGHT))     m_context->m_local_input.right = false;
+            if (event_key.isReleased(KEY_RCTRL))     m_context->m_local_input.fire  = false;
+        }
     }
 }

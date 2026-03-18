@@ -4,6 +4,10 @@
 #include "../appconfig.h"
 #include "../soundconfig.h"
 #include "../spriteconfig.h"
+#include "../network/network_manager.h"
+#include "waiting_for_player_state.h"
+#include "ip_input_state.h"
+#include <string>
 #include "game/game.h"
 
 #include <iostream>
@@ -13,6 +17,8 @@ Menu::Menu(InteractiveComponents interactive_components, StateMachine *state_mac
 {
     m_menu_items.push_back("1 Player");
     m_menu_items.push_back("2 Players");
+    m_menu_items.push_back("Host Online");
+    m_menu_items.push_back("Join Online");
     m_menu_items.push_back("Exit");
 
     m_current_menu_index = 0;
@@ -112,6 +118,15 @@ void Menu::eventProcess(const Event &event)
             {
                 int players_count = m_current_menu_index == 0 ? 1 : 2;
                 transiteTo(new Game(players_count, m_interactive_components, m_state_machine));
+            }
+            else if (m_current_menu_index == 2) // Host Online
+            {
+                NetworkManager *net = new NetworkManager();
+                transiteTo(new WaitingForPlayerState(m_interactive_components, m_state_machine, net));
+            }
+            else if (m_current_menu_index == 3) // Join Online
+            {
+                transiteTo(new IPInputState(m_interactive_components, m_state_machine));
             }
             else
             {

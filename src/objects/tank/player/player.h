@@ -3,6 +3,7 @@
 
 #include "../tank.h"
 #include "../moving_state.h"
+#include "../../../network/input_packet.h"
 #include <vector>
 
 class Player : public Tank
@@ -13,6 +14,7 @@ public:
 
     void draw(Renderer &renderer) override;
     void handleKeyboardEvent(const KeyboardEvent &ev);
+    void applyNetworkInput(const InputPacket &input);
     void update(Uint32 dt) override;
 
     void hit();

@@ -9,6 +9,8 @@
 #include "../../objects/eagle.h"
 #include "../../objects/bonus.h"
 #include "../../engine/state_machine/context_state.h"
+#include "../../network/input_packet.h"
+#include "../../network/network_manager.h"
 #include "level_environment.h"
 #include <vector>
 #include <string>
@@ -22,6 +24,7 @@ public:
 
     void draw(Renderer &renderer) override;
     void update(const UpdateState &updateState) override;
+    NetworkManager *m_network_manager = nullptr;
 
     /**
      * Key press handling function.
@@ -74,6 +77,11 @@ private:
     int m_current_level;
     int m_players_count;
     int m_enemies_to_kill_count;
+
+    //networking stuff
+    InputPacket m_local_input = {0, false, false, false, false, false};
+    InputPacket m_remote_input = {0, false, false, false, false, false};
+    uint32_t m_frame = 0;
 
     Uint32 m_new_enemy_cooldown;
     unsigned m_enemy_respown_position;
