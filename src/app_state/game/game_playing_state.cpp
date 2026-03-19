@@ -81,17 +81,26 @@ void Game::PlayingState::eventProcess(const Event &event)
 
         for (auto player : m_context->m_players)
         {
-            if (event_key.isPressed(KEY_UP))         m_context->m_local_input.up    = true;
-            if (event_key.isPressed(KEY_DOWN))       m_context->m_local_input.down  = true;
-            if (event_key.isPressed(KEY_LEFT))       m_context->m_local_input.left  = true;
-            if (event_key.isPressed(KEY_RIGHT))      m_context->m_local_input.right = true;
-            if (event_key.isPressed(KEY_RCTRL))      m_context->m_local_input.fire  = true;
+            if (m_context->m_network_manager && m_context->m_network_manager->isConnected())
+            {
+                // Online: store input in local_input packet to be sent over network
+                m_context->m_local_input.up    = m_context->m_local_input.up    || event_key.isPressed(KEY_UP);
+                m_context->m_local_input.down  = m_context->m_local_input.down  || event_key.isPressed(KEY_DOWN);
+                m_context->m_local_input.left  = m_context->m_local_input.left  || event_key.isPressed(KEY_LEFT);
+                m_context->m_local_input.right = m_context->m_local_input.right || event_key.isPressed(KEY_RIGHT);
+                m_context->m_local_input.fire  = m_context->m_local_input.fire  || event_key.isPressed(KEY_RCTRL);
 
-            if (event_key.isReleased(KEY_UP))        m_context->m_local_input.up    = false;
-            if (event_key.isReleased(KEY_DOWN))      m_context->m_local_input.down  = false;
-            if (event_key.isReleased(KEY_LEFT))      m_context->m_local_input.left  = false;
-            if (event_key.isReleased(KEY_RIGHT))     m_context->m_local_input.right = false;
-            if (event_key.isReleased(KEY_RCTRL))     m_context->m_local_input.fire  = false;
+                if (event_key.isReleased(KEY_UP))    m_context->m_local_input.up    = false;
+                if (event_key.isReleased(KEY_DOWN))  m_context->m_local_input.down  = false;
+                if (event_key.isReleased(KEY_LEFT))  m_context->m_local_input.left  = false;
+                if (event_key.isReleased(KEY_RIGHT)) m_context->m_local_input.right = false;
+                if (event_key.isReleased(KEY_RCTRL)) m_context->m_local_input.fire  = false;
+            }
+            else
+            {
+                // Local: use normal keyboard handling which respects key bindings
+                player->handleKeyboardEvent(event_key);
+            }
         }
     }
 }

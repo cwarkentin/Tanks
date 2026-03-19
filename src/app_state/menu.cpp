@@ -7,6 +7,7 @@
 #include "../network/network_manager.h"
 #include "waiting_for_player_state.h"
 #include "ip_input_state.h"
+#include "controls_state.h"
 #include <string>
 #include "game/game.h"
 
@@ -16,9 +17,10 @@ Menu::Menu(InteractiveComponents interactive_components, StateMachine *state_mac
     : AppState(interactive_components, state_machine)
 {
     m_menu_items.push_back("1 Player");
-    m_menu_items.push_back("2 Players");
+    m_menu_items.push_back("2 Player Local");
     m_menu_items.push_back("Host Online");
     m_menu_items.push_back("Join Online");
+    m_menu_items.push_back("Controls");
     m_menu_items.push_back("Exit");
 
     m_current_menu_index = 0;
@@ -127,6 +129,10 @@ void Menu::eventProcess(const Event &event)
             else if (m_current_menu_index == 3) // Join Online
             {
                 transiteTo(new IPInputState(m_interactive_components, m_state_machine));
+            }
+            else if (m_current_menu_index == 4) // Controls
+            {
+                transiteTo(new ControlsState(m_interactive_components, m_state_machine));
             }
             else
             {

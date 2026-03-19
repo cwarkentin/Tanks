@@ -48,25 +48,16 @@ public:
 
             if (ev.isPressed(KeyCode::KEY_RETURN))
             {
-                if (m_ip.empty())
+                if (ev.isPressed(KeyCode::KEY_RETURN))
                 {
-                    m_error = "Please enter an IP address";
+                    if (m_ip.empty())
+                    {
+                        m_error = "Please enter an IP address";
+                        return;
+                    }
+                    transiteTo(new ConnectingState(m_interactive_components, m_state_machine, m_ip));
                     return;
                 }
-                NetworkManager *net = new NetworkManager();
-                if (net->join(m_ip.c_str(), 12345))
-                {
-                    std::cout << "Seed: " << net->syncSeed() << std::endl;
-                    Game *game = new Game(2, m_interactive_components, m_state_machine);
-                    game->m_network_manager = net;
-                    transiteTo(game);
-                }
-                else
-                {
-                    delete net;
-                    m_error = "Failed to connect to " + m_ip;
-                }
-                return;
             }
 
             if (ev.isPressed(KeyCode::KEY_BACKSPACE))
