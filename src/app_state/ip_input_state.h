@@ -3,6 +3,7 @@
 #include "appstate.h"
 #include "../appconfig.h"
 #include "../network/network_manager.h"
+#include "connecting_state.h"
 #include "game/game.h"
 #include "menu.h"
 #include <string>
