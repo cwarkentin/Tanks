@@ -83,18 +83,22 @@ void Game::PlayingState::eventProcess(const Event &event)
         {
             if (m_context->m_network_manager && m_context->m_network_manager->isConnected())
             {
-                // Online: store input in local_input packet to be sent over network
-                m_context->m_local_input.up    = m_context->m_local_input.up    || event_key.isPressed(KEY_UP);
-                m_context->m_local_input.down  = m_context->m_local_input.down  || event_key.isPressed(KEY_DOWN);
-                m_context->m_local_input.left  = m_context->m_local_input.left  || event_key.isPressed(KEY_LEFT);
-                m_context->m_local_input.right = m_context->m_local_input.right || event_key.isPressed(KEY_RIGHT);
-                m_context->m_local_input.fire  = m_context->m_local_input.fire  || event_key.isPressed(KEY_RCTRL);
+                // Use correct keys based on role - host=P1 keys, client=P2 keys
+                auto &keys = m_context->m_network_manager->isHost()
+                    ? AppConfig::player_1_keys
+                    : AppConfig::player_2_keys;
 
-                if (event_key.isReleased(KEY_UP))    m_context->m_local_input.up    = false;
-                if (event_key.isReleased(KEY_DOWN))  m_context->m_local_input.down  = false;
-                if (event_key.isReleased(KEY_LEFT))  m_context->m_local_input.left  = false;
-                if (event_key.isReleased(KEY_RIGHT)) m_context->m_local_input.right = false;
-                if (event_key.isReleased(KEY_RCTRL)) m_context->m_local_input.fire  = false;
+                if (event_key.isPressed(keys[0]))  m_context->m_local_input.up    = true;
+                if (event_key.isPressed(keys[1]))  m_context->m_local_input.down  = true;
+                if (event_key.isPressed(keys[2]))  m_context->m_local_input.left  = true;
+                if (event_key.isPressed(keys[3]))  m_context->m_local_input.right = true;
+                if (event_key.isPressed(keys[4]))  m_context->m_local_input.fire  = true;
+
+                if (event_key.isReleased(keys[0])) m_context->m_local_input.up    = false;
+                if (event_key.isReleased(keys[1])) m_context->m_local_input.down  = false;
+                if (event_key.isReleased(keys[2])) m_context->m_local_input.left  = false;
+                if (event_key.isReleased(keys[3])) m_context->m_local_input.right = false;
+                if (event_key.isReleased(keys[4])) m_context->m_local_input.fire  = false;
             }
             else
             {
